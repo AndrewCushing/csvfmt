@@ -11,9 +11,8 @@ fn main() {
         exit(0);
     }
 
-    let opt_map = parse_opts(&args[1..=(args.len()-1)]);
-    println!("{:?}", opt_map);
-    run(opt_map);
+    let opt_map = parse_opts(&args[1..(args.len()-1)]);
+    run(opt_map, args.last().expect("").to_string());
 }
 
 fn print_usage() {
@@ -24,6 +23,7 @@ fn print_usage() {
     println!("Options:");
     println!("  --delimiter     string     Specify the delimiter used. Default is the comma ','");
     println!("  --top           int        Only print the top n lines");
+    println!("  --crlf          bool       Whether the file uses Windows CRLF for line endings. Defaults to false");
 }
 
 fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {
@@ -31,7 +31,6 @@ fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {
     let mut opts = HashMap::new();
     let op_start = "--";
     while i < args.len() {
-        println!("start");
         let name: String;
         let mut vals: Vec<&String> = Vec::new();
 
