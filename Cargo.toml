@@ -3,6 +3,8 @@ name = "csvfmt"
 version = "0.1.0"
 authors = ["andrewcushing <andyc.bt4567@gmail.com>"]
 edition = "2018"
+description = "A little command line app to print a csv file in a nice format"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
