@@ -1,21 +1,19 @@
 use std::env;
 use std::collections::HashMap;
 use csvfmt::run;
+use std::process::exit;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
         print_usage();
+        exit(0);
     }
 
-    let delim: char;
-    if args.len() == 2 {
-        delim = ',';
-    } else {
-        let opt_map = parse_opts(&args[1..=(args.len()-1)]);
-        run(opt_map);
-    }
+    let opt_map = parse_opts(&args[1..=(args.len()-1)]);
+    println!("{:?}", opt_map);
+    run(opt_map);
 }
 
 fn print_usage() {
@@ -24,7 +22,8 @@ fn print_usage() {
     println!("  {} [OPTIONS] FILEPATH", env!("CARGO_BIN_NAME"));
     println!();
     println!("Options:");
-    println!("  --delimiter     Specify the delimiter used. Default is the comma (,)");
+    println!("  --delimiter     string     Specify the delimiter used. Default is the comma ','");
+    println!("  --top           int        Only print the top n lines");
 }
 
 fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {
