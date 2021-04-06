@@ -12,13 +12,27 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
         .map(|line| line.split(&delim).collect())
         .collect();
 
+    let rows = match opts.get("top") {
+        Some(s) if s.len() > 0 => {
+            match str::parse(s[0]) {
+            Ok(n) => n,
+            Err(_) => data.len()
+            }
+        }
+        _ => {data.len()}
+    };
+
+    print_data(&data, rows);
+}
+
+fn print_data(data: &Vec<Vec<&str>>, rows: usize) {
     let widths = get_col_widths(&data);
 
     let total_width: usize = widths.iter().sum::<usize>() + widths.len() + 1;
 
     println!("{}", get_table_top(total_width));
 
-    for i in 0..data.len() {
+    for i in 0..rows {
         let mut line: String = String::new();
         for j in 0..widths.len() {
             let val = match data[i].get(j) {
