@@ -26,7 +26,7 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
 }
 
 fn print_data(data: &Vec<Vec<&str>>, rows: usize) {
-    let widths = get_col_widths(&data);
+    let widths = get_col_widths(&data, rows);
 
     let total_width: usize = widths.iter().sum::<usize>() + widths.len() + 1;
 
@@ -72,10 +72,10 @@ fn get_table_end(width: usize) -> String {
     result
 }
 
-fn get_col_widths(data: &Vec<Vec<&str>>) -> Vec<usize> {
+fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
     let mut widths: Vec<usize> = data[0].iter().map(|s| s.len()).collect();
 
-    for line_num in 1..data.len() {
+    for line_num in 1..rows {
         for val_num in 0..widths.len() {
             if data[line_num][val_num].len() > widths[val_num] {
                 widths.remove(val_num);
