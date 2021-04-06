@@ -31,7 +31,7 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
         println!("{}", line);
     }
 
-    println!("{}", get_table_top(total_width));
+    println!("{}", get_table_end(total_width));
 }
 
 fn fit_to_width(s: &str, width: usize) -> String {
@@ -44,7 +44,7 @@ fn fit_to_width(s: &str, width: usize) -> String {
 
 fn get_table_top(width: usize) -> String {
     let mut result = String::from("-");
-    for i in 1..width {
+    for _i in 1..width {
         result.push_str("-");
     }
     result
@@ -52,7 +52,7 @@ fn get_table_top(width: usize) -> String {
 
 fn get_table_end(width: usize) -> String {
     let mut result = String::from("-");
-    for i in 1..width {
+    for _i in 1..width {
         result.push_str("-");
     }
     result

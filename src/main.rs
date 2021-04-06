@@ -23,7 +23,8 @@ fn print_usage() {
     println!("Options:");
     println!("  --delimiter     string     Specify the delimiter used. Default is the comma ','");
     println!("  --top           int        Only print the top n lines");
-    println!("  --crlf          bool       Whether the file uses Windows CRLF for line endings. Defaults to false");
+    println!("  --crlf          bool       Set to true if the file uses Windows CRLF for line endings, otherwise
+                             unix style LF line endings are assumed. Defaults to false");
 }
 
 fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {
