@@ -5,7 +5,7 @@ use std::cmp::min;
 use std::process::exit;
 
 pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
-    let delim: String = get_opt_or_default_string(&opts, String::from("delimiter"), String::from(","));
+    let delim: String = get_opt_or_default(&opts, String::from("delimiter"), String::from(","));
     let eol: String = match get_bool_opt(&opts, "CRLF", false) {
         true => String::from("\r\n"),
         false => String::from("\n")
@@ -117,14 +117,14 @@ fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
 }
 
 fn get_bool_opt(opts: &HashMap<String, Vec<&String>>, opt_name: &str, default: bool) -> bool {
-    let eol_bool: String = get_opt_or_default_string(&opts, String::from(opt_name), default.to_string());
+    let eol_bool: String = get_opt_or_default(&opts, String::from(opt_name), default.to_string());
     match eol_bool.as_str() {
         "true" => true,
         _ => false
     }
 }
 
-fn get_opt_or_default_string(opts: &HashMap<String, Vec<&String>>, opt_name: String, default: String) -> String {
+fn get_opt_or_default(opts: &HashMap<String, Vec<&String>>, opt_name: String, default: String) -> String {
     match opts.get(&opt_name) {
         None => {default}
         Some(s) => {
