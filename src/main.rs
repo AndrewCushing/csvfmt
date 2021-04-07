@@ -2,6 +2,7 @@ use std::env;
 use std::collections::HashMap;
 use csvfmt::run;
 use std::process::exit;
+use std::io::{Read, Error};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,7 +12,11 @@ fn main() {
         exit(0);
     }
 
-    let opt_map = parse_opts(&args[1..(args.len()-1)]);
+    let opt_map = match args.contains(&String::from("stdin")) {
+        true => parse_opts(&args[1..(args.len()-1)]),
+        false => parse_opts(&args[1..]),
+    };
+
     run(opt_map, args.last().expect("").to_string());
 }
 

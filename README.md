@@ -10,4 +10,6 @@ Options:
   --top           int        Only print the top n lines
   --crlf          bool       Set to true if the file uses Windows CRLF for line endings, otherwise unix style 
                              LF line endings are assumed. Defaults to false
+  --stdin         bool       Set to true to read csv data from stdin. Defaults to false. If this is set to true, there's
+                             no need to specify a file.
 ```
