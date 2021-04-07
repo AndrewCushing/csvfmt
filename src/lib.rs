@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::fs;
 use std::io::Read;
+use std::cmp::min;
+use std::process::exit;
 
 pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
     let delim: String = get_opt_or_default_string(&opts, String::from("delimiter"), String::from(","));
@@ -18,7 +20,7 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
         .map(|line| line.split(&delim).collect())
         .collect();
 
-    let rows = match opts.get("top") {
+    let rows = min(data.len(),match opts.get("top") {
         Some(s) if s.len() > 0 => {
             match str::parse(s[0]) {
             Ok(n) => n,
@@ -26,7 +28,7 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
             }
         }
         _ => {data.len()}
-    };
+    });
 
     print_data(&data, rows);
 }
@@ -34,10 +36,22 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
 fn read_content(file_path: &String, stdin: bool) -> String {
     if stdin {
         let mut result: String = String::new();
-        std::io::stdin().read_to_string(&mut result).expect("Unable to read content of file");
+        match std::io::stdin().read_to_string(&mut result) {
+            Ok(_) => {}
+            Err(_) => {
+                println!("Unable to read contents from stdin");
+                exit(1)
+            }
+        };
         result
     } else {
-        fs::read_to_string(file_path).expect("Unable to read content of file")
+        match fs::read_to_string(file_path) {
+            Ok(content) => {content}
+            Err(_) => {
+                println!("Unable to read contents of file");
+                exit(1);
+            }
+        }
     }
 }
 

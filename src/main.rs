@@ -2,7 +2,6 @@ use std::env;
 use std::collections::HashMap;
 use csvfmt::run;
 use std::process::exit;
-use std::io::{Read, Error};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -26,10 +25,13 @@ fn print_usage() {
     println!("  {} [OPTIONS] FILEPATH", env!("CARGO_BIN_NAME"));
     println!();
     println!("Options:");
-    println!("  --delimiter     string     Specify the delimiter used. Default is the comma ','");
-    println!("  --top           int        Only print the top n lines");
-    println!("  --crlf          bool       Set to true if the file uses Windows CRLF for line endings, otherwise
-                             unix style LF line endings are assumed. Defaults to false");
+    println!("  Option name     Expected data type     Description");
+    println!("  --delimiter     string                 Specify the delimiter used. Default is the comma ','");
+    println!("  --top           integer                Only print the top n lines");
+    println!("  --crlf          boolean                Set to true if the file uses Windows CRLF for line endings, otherwise");
+    println!("                                         unix style LF line endings are assumed. Defaults to false");
+    println!("  --stdin         boolean                Set to true to read csv data from stdin. Defaults to false. If this is set to");
+    println!("                                         true, there's no need to specify a file.");
 }
 
 fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {
