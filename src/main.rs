@@ -11,7 +11,11 @@ fn main() {
         exit(0);
     }
 
-    let opt_map = parse_opts(&args[1..(args.len()-1)]);
+    let opt_map = match args.contains(&String::from("stdin")) {
+        true => parse_opts(&args[1..(args.len()-1)]),
+        false => parse_opts(&args[1..]),
+    };
+
     run(opt_map, args.last().expect("").to_string());
 }
 
@@ -21,10 +25,13 @@ fn print_usage() {
     println!("  {} [OPTIONS] FILEPATH", env!("CARGO_BIN_NAME"));
     println!();
     println!("Options:");
-    println!("  --delimiter     string     Specify the delimiter used. Default is the comma ','");
-    println!("  --top           int        Only print the top n lines");
-    println!("  --crlf          bool       Set to true if the file uses Windows CRLF for line endings, otherwise
-                             unix style LF line endings are assumed. Defaults to false");
+    println!("  Option name     Expected data type     Description");
+    println!("  --delimiter     string                 Specify the delimiter used. Default is the comma ','");
+    println!("  --top           integer                Only print the top n lines");
+    println!("  --crlf          boolean                Set to true if the file uses Windows CRLF for line endings, otherwise");
+    println!("                                         unix style LF line endings are assumed. Defaults to false");
+    println!("  --stdin         boolean                Set to true to read csv data from stdin. Defaults to false. If this is set to");
+    println!("                                         true, there's no need to specify a file.");
 }
 
 fn parse_opts(args: &[String]) -> HashMap<String, Vec<&String>> {

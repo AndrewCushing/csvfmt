@@ -1,18 +1,26 @@
 use std::collections::HashMap;
 use std::fs;
+use std::io::Read;
+use std::cmp::min;
+use std::process::exit;
 
 pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
-    let delim: String = get_delim(&opts);
-    let eol: String = get_eol(&opts);
+    let delim: String = get_opt_or_default(&opts, String::from("delimiter"), String::from(","));
+    let eol: String = match get_bool_opt(&opts, "CRLF", false) {
+        true => String::from("\r\n"),
+        false => String::from("\n")
+    };
 
-    let content = fs::read_to_string(&file_path).expect("Unable to read content of file");
+    let stdin: bool = get_bool_opt(&opts, "stdin", false);
+
+    let content = read_content(&file_path, stdin);
 
     let data: Vec<Vec<&str>> = content
         .split_terminator(&eol)
         .map(|line| line.split(&delim).collect())
         .collect();
 
-    let rows = match opts.get("top") {
+    let rows = min(data.len(),match opts.get("top") {
         Some(s) if s.len() > 0 => {
             match str::parse(s[0]) {
             Ok(n) => n,
@@ -20,9 +28,31 @@ pub fn run(opts: HashMap<String, Vec<&String>>, file_path: String) {
             }
         }
         _ => {data.len()}
-    };
+    });
 
     print_data(&data, rows);
+}
+
+fn read_content(file_path: &String, stdin: bool) -> String {
+    if stdin {
+        let mut result: String = String::new();
+        match std::io::stdin().read_to_string(&mut result) {
+            Ok(_) => {}
+            Err(_) => {
+                println!("Unable to read contents from stdin");
+                exit(1)
+            }
+        };
+        result
+    } else {
+        match fs::read_to_string(file_path) {
+            Ok(content) => {content}
+            Err(_) => {
+                println!("Unable to read contents of file");
+                exit(1);
+            }
+        }
+    }
 }
 
 fn print_data(data: &Vec<Vec<&str>>, rows: usize) {
@@ -86,15 +116,11 @@ fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
     widths
 }
 
-fn get_delim(opts: &HashMap<String, Vec<&String>>) -> String {
-    get_opt_or_default(&opts, String::from("delimiter"), String::from(","))
-}
-
-fn get_eol(opts: &HashMap<String, Vec<&String>>) -> String {
-    let eol_bool: String = get_opt_or_default(&opts, String::from("CRLF"), String::from("false"));
+fn get_bool_opt(opts: &HashMap<String, Vec<&String>>, opt_name: &str, default: bool) -> bool {
+    let eol_bool: String = get_opt_or_default(&opts, String::from(opt_name), default.to_string());
     match eol_bool.as_str() {
-        "true" => {String::from("\r\n")}
-        _ => {String::from("\n")}
+        "true" => true,
+        _ => false
     }
 }
 
