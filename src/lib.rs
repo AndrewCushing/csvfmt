@@ -106,7 +106,7 @@ fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
     let mut widths: Vec<usize> = data[0].iter().map(|s| s.len()).collect();
 
     for line_num in 1..rows {
-        for val_num in 0..widths.len() {
+        for val_num in 0..(min(data[line_num].len(), widths.len())) {
             if data[line_num][val_num].len() > widths[val_num] {
                 widths.remove(val_num);
                 widths.insert(val_num, data[line_num][val_num].len());
