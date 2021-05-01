@@ -25,7 +25,7 @@ fn get_data_in_string(data: &Vec<Vec<&str>>, rows: usize) -> String {
     let total_width: usize = widths.iter().sum::<usize>() + widths.len() + 1;
 
     let mut result = String::new();
-    result.push_str(get_separator(total_width).as_str());
+    result.push_str(get_separator_line(total_width).as_str());
 
     for i in 0..rows {
         for j in 0..widths.len() {
@@ -38,21 +38,21 @@ fn get_data_in_string(data: &Vec<Vec<&str>>, rows: usize) -> String {
         result.push_str("|\n");
     }
 
-    result.push_str(get_separator(total_width).as_str());
+    result.push_str(get_separator_line(total_width).as_str());
     result
 }
 
 fn fit_to_width(s: &str, width: usize) -> String {
     let mut result = String::from(s);
-    for _ in 0..(width - s.len()) {
+    for _ in 0..(width - min(width, s.len())) {
         result.push_str(" ");
     }
     result
 }
 
-fn get_separator(width: usize) -> String {
-    let mut result = String::from("-");
-    for _i in 1..width {
+fn get_separator_line(width: usize) -> String {
+    let mut result = String::new();
+    for _i in 0..width {
         result.push_str("-");
     }
     result.push_str("\n");
@@ -71,4 +71,74 @@ fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
         }
     }
     widths
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_separator_line_zero() {
+        assert_eq!(String::from("\n"), get_separator_line(0));
+    }
+
+    #[test]
+    fn get_separator_line_ten() {
+        assert_eq!(String::from("----------\n"), get_separator_line(10));
+    }
+
+    #[test]
+    fn fit_to_width_string_less_than_width() {
+        assert_eq!(String::from("bob  "), fit_to_width("bob", 5));
+    }
+
+    #[test]
+    fn fit_to_width_string_equal_to_width() {
+        assert_eq!(String::from("bob  "), fit_to_width("bob", 5));
+    }
+
+    #[test]
+    fn fit_to_width_string_longer_than_width() {
+        assert_eq!(String::from("silly me"), fit_to_width("silly me", 2));
+    }
+
+    #[test]
+    fn fit_to_width_string_empty() {
+        assert_eq!(String::from("        "), fit_to_width("", 8));
+    }
+
+    #[test]
+    fn get_col_widths_some_zeros_all_rows() {
+        let data = vec![
+            vec!["", "", "0o0"],
+            vec!["", "", "fdd"],
+            vec!["", "", "ghuei"]
+        ];
+
+        assert_eq!(vec![0, 0, 5], get_col_widths(&data, data.len()));
+    }
+
+    #[test]
+    fn get_col_widths_some_zeros_not_all_rows() {
+        let data = vec![
+            vec!["", "", "0o0"],
+            vec!["", "55", "fdd"],
+            vec!["", "", "ghuei"]
+        ];
+
+        assert_eq!(vec![0, 2, 3], get_col_widths(&data, 2));
+    }
+
+    #[test]
+    fn get_col_widths_no_rows() {
+        let data = vec![
+            vec!["yum", "ok", "0o0"],
+            vec!["654", "000", "fd654d"],
+            vec!["", "ty", "ghuei"]
+        ];
+
+        assert_eq!(vec![3, 2, 3], get_col_widths(&data, 0));
+    }
+
+
 }
