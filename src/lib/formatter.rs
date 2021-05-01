@@ -2,7 +2,7 @@ use std::cmp::min;
 
 pub fn to_csv(content: &str, eol: &str, delim: &str, rows: Option<&&String>) -> String {
     if content.len() == 0 {
-        return String::new()
+        return String::new();
     }
 
     let data: Vec<Vec<&str>> = content
@@ -10,14 +10,14 @@ pub fn to_csv(content: &str, eol: &str, delim: &str, rows: Option<&&String>) -> 
         .map(|line| line.split(&delim).collect())
         .collect();
 
-    let rows = min(data.len(),match rows {
+    let rows = min(data.len(), match rows {
         Some(s) if s.len() > 0 => {
             match str::parse(s) {
                 Ok(n) => n,
                 Err(_) => data.len()
             }
         }
-        _ => {data.len()}
+        _ => { data.len() }
     });
 
     get_data_in_string(&data, rows)
@@ -34,8 +34,8 @@ fn get_data_in_string(data: &Vec<Vec<&str>>, rows: usize) -> String {
     for i in 0..rows {
         for j in 0..widths.len() {
             let val = match data[i].get(j) {
-                None => {""}
-                Some(s) => {s}
+                None => { "" }
+                Some(s) => { s }
             };
             result.push_str(format!("|{}", fit_to_width(val, widths[j])).as_str());
         }
@@ -83,32 +83,32 @@ mod tests {
 
     #[test]
     fn get_separator_line_zero() {
-        assert_eq!(String::from("\n"), get_separator_line(0));
+        assert_eq!("\n", get_separator_line(0));
     }
 
     #[test]
     fn get_separator_line_ten() {
-        assert_eq!(String::from("----------\n"), get_separator_line(10));
+        assert_eq!("----------\n", get_separator_line(10));
     }
 
     #[test]
     fn fit_to_width_string_less_than_width() {
-        assert_eq!(String::from("bob  "), fit_to_width("bob", 5));
+        assert_eq!("bob  ", fit_to_width("bob", 5));
     }
 
     #[test]
     fn fit_to_width_string_equal_to_width() {
-        assert_eq!(String::from("bob  "), fit_to_width("bob", 5));
+        assert_eq!("bob  ", fit_to_width("bob", 5));
     }
 
     #[test]
     fn fit_to_width_string_longer_than_width() {
-        assert_eq!(String::from("silly me"), fit_to_width("silly me", 2));
+        assert_eq!("silly me", fit_to_width("silly me", 2));
     }
 
     #[test]
     fn fit_to_width_string_empty() {
-        assert_eq!(String::from("        "), fit_to_width("", 8));
+        assert_eq!("        ", fit_to_width("", 8));
     }
 
     #[test]
@@ -144,5 +144,33 @@ mod tests {
         assert_eq!(vec![3, 2, 3], get_col_widths(&data, 0));
     }
 
+    #[test]
+    fn get_data_in_string_starts_and_ends_with_separator() {
+        let data = vec![
+            vec!["yum", "ok", "0o0", "kldg", "lskdgh"],
+            vec!["654", "000", "fd654d", "lkjhg", "iuf9u0"],
+            vec!["", "ty", "ghuei"],
+            vec!["dfg", "gdfsdf", "sdffg", "gg", ""]
+        ];
 
+        let actual_result = get_data_in_string(&data, 4);
+
+        assert_eq!(true, actual_result.starts_with(&get_separator_line(32)));
+        assert_eq!(true, actual_result.ends_with(&get_separator_line(32)));
+    }
+
+    #[test]
+    fn get_data_in_string_has_correct_number_of_lines() {
+        let data = vec![
+            vec!["yum", "ok", "", "kldg", "lskdgh"],
+            vec!["", "", "", "", ""],
+            vec!["", "", ""],
+            vec!["", "", "", "", ""],
+            vec!["", "", "", "", ""],
+        ];
+
+        let actual_result = get_data_in_string(&data, 5);
+
+        assert_eq!(8, actual_result.split("\n").fold(0, |i, _| i + 1));
+    }
 }
