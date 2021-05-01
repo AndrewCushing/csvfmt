@@ -12,4 +12,11 @@ categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "csvfmt"
+path = "src/main/mod.rs"
+
+[lib]
+path = "src/lib/mod.rs"
+
 [dependencies]

@@ -21,15 +21,37 @@ cat example.csv | csvfmt --stdin true
 
 ### Usage
 ```
-csvfmt [OPTIONS] FILEPATH
+Usage:
+  csvfmt [OPTIONS] FILEPATH
 
 Options:
-  Option name     Expected data type     Description
-  --delimiter     string                 Specify the delimiter used. Default is the comma ','
-  --top           integer                Only print the top n lines
-  --crlf          boolean                Set to true if the file uses Windows CRLF for line endings,
-                                         otherwise unix style LF line endings are assumed. Defaults 
+  Flag            Expected data type     Description
+  -d              string                 Specify the delimiter used. Default is the comma ','
+  -f              string                 Name of file to read instead of stdin
+  -h              none                   Print this help message. No other actions will be performed
+  -t              integer                Only print the top n lines
+  -w              none                   Set to true if the file uses Windows CRLF for line endings,
+                                         otherwise unix style LF line endings are assumed. Defaults
                                          to false
-  --stdin         boolean                Set to true to read csv data from stdin. Defaults to false
-                                         If this is set to true, there's no need to specify a file
+```
+
+Given the following csv file (called, for example, demo.csv):
+
+```
+1,2,3,4,509
+4,5,6
+2,3,4,55555,6
+34554,2345,8,2345,3
+```
+
+This can be fed to csvfmt through stdin using a command such as `cat demo.csv | csvfmt` to produce the following 
+slightly more readable output:
+
+```
+------------------------
+|1    |2   |3|4    |509|
+|4    |5   |6|     |   |
+|2    |3   |4|55555|6  |
+|34554|2345|8|2345 |3  |
+------------------------
 ```
