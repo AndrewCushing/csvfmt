@@ -1,6 +1,10 @@
 use std::cmp::min;
 
 pub fn to_csv(content: &str, eol: &str, delim: &str, rows: Option<&&String>) -> String {
+    if content.len() == 0 {
+        return String::new()
+    }
+
     let data: Vec<Vec<&str>> = content
         .split_terminator(&eol)
         .map(|line| line.split(&delim).collect())
