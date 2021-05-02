@@ -1,6 +1,6 @@
 [package]
 name = "csvfmt"
-version = "0.2.2"
+version = "1.0.0"
 authors = ["andrewcushing <andyc.bt4567@gmail.com>"]
 edition = "2018"
 description = "A little command line app to print a csv file in a nice format"
@@ -20,3 +20,4 @@ path = "src/main/mod.rs"
 path = "src/lib/mod.rs"
 
 [dependencies]
+unicode-segmentation = "1.7.*"

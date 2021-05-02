@@ -1,4 +1,5 @@
 use std::cmp::min;
+use unicode_segmentation::UnicodeSegmentation;
 
 pub fn to_csv(content: &str, eol: &str, delim: &str, rows: Option<&&String>) -> String {
     if content.len() == 0 {
@@ -68,13 +69,17 @@ fn get_col_widths(data: &Vec<Vec<&str>>, rows: usize) -> Vec<usize> {
 
     for line_num in 1..rows {
         for val_num in 0..(min(data[line_num].len(), widths.len())) {
-            if data[line_num][val_num].len() > widths[val_num] {
+            if get_len(data[line_num][val_num]) > widths[val_num] {
                 widths.remove(val_num);
-                widths.insert(val_num, data[line_num][val_num].len());
+                widths.insert(val_num, get_len(data[line_num][val_num]));
             }
         }
     }
     widths
+}
+
+fn get_len(s: &str) -> usize {
+    s.graphemes(true).collect::<Vec<&str>>().len()
 }
 
 #[cfg(test)]
