@@ -2,11 +2,13 @@ use std::cmp::min;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub fn to_csv(content: &str, eol: &str, delim: &str, rows: Option<&&String>) -> String {
-    if content.len() == 0 {
-        return String::new();
+    let trimmed = content.trim();
+
+    if trimmed.len() == 0 {
+        return String::from("\n");
     }
 
-    let data: Vec<Vec<&str>> = content
+    let data: Vec<Vec<&str>> = trimmed
         .split_terminator(&eol)
         .map(|line| line.split(&delim).collect())
         .collect();
@@ -85,6 +87,21 @@ fn get_len(s: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn get_len_normal_chars() {
+        assert_eq!(3, get_len("abc"));
+    }
+
+    #[test]
+    fn get_len_no_chars() {
+        assert_eq!(0, get_len(""));
+    }
+
+    #[test]
+    fn get_len_fancy_chars() {
+        assert_eq!(15, get_len("Владимир Петков"));
+    }
 
     #[test]
     fn get_separator_line_zero() {
@@ -177,5 +194,89 @@ mod tests {
         let actual_result = get_data_in_string(&data, 5);
 
         assert_eq!(8, actual_result.split("\n").fold(0, |i, _| i + 1));
+    }
+
+    #[test]
+    fn to_csv_no_content() {
+        assert_eq!("\n",
+                   to_csv("", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_no_delimiters_one_line() {
+        assert_eq!("-------\n|hello|\n-------\n",
+                   to_csv("hello", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_no_delimiters_two_lines() {
+        assert_eq!("-------\n|hello|\n|world|\n-------\n",
+                   to_csv("hello\nworld", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_normal_content() {
+        assert_eq!("-------\n|1|2|3|\n|4|5|6|\n-------\n",
+                   to_csv("1,2,3\n4,5,6", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_blank_first_and_last_line() {
+        assert_eq!("-------\n|1|2|3|\n|4|5|6|\n-------\n",
+                   to_csv("\n1,2,3\n4,5,6\n", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_extra_data_on_lines_after_first() {
+        assert_eq!("--------\n|1|2 |3|\n|4|5 |6|\n|1|66|4|\n--------\n",
+                   to_csv("\n1,2,3\n4,5,6,7\n1,66,4\n", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_missing_data_on_lines_after_first() {
+        assert_eq!("--------\n|1|2 |3|\n|4|5 | |\n|1|66|4|\n--------\n",
+                   to_csv("\n1,2,3\n4,5\n1,66,4\n", "\n", ",", Some(&&String::from("5"))));
+    }
+
+    #[test]
+    fn to_csv_only_print_1_row() {
+        assert_eq!("-------\n|1|2|3|\n-------\n",
+                   to_csv("\n1,2,3\n4,5,6,7\n", "\n", ",", Some(&&String::from("1"))));
+    }
+
+    #[test]
+    fn to_csv_only_print_2_rows() {
+        assert_eq!("-------\n|1|2|3|\n|4|5|6|\n-------\n",
+                   to_csv("\n1,2,3\n4,5,6,7\n", "\n", ",", Some(&&String::from("2"))));
+    }
+
+    #[test]
+    fn to_csv_print_0_rows() {
+        assert_eq!("-------\n-------\n",
+                   to_csv("\n1,2,3\n4,5,6,7\n", "\n", ",", Some(&&String::from("0"))));
+    }
+
+    #[test]
+    fn to_csv_spaces_in_content() {
+        let mut expected = String::new();
+        expected.push_str("------------------------------------\n");
+        expected.push_str("|hi there|I'm bob|what's your name?|\n");
+        expected.push_str("|4       |5      |6                |\n");
+        expected.push_str("------------------------------------\n");
+        assert_eq!(expected,
+                   to_csv("\nhi there,I'm bob,what's your name?\n4,5,6,7\n",
+                          "\n", ",", Some(&&String::from("2"))));
+    }
+
+    #[test]
+    fn to_csv_non_comma_delimiter() {
+        let mut expected = String::new();
+        expected.push_str("------------------------------------\n");
+        expected.push_str("|hi there|I'm bob|what's your name?|\n");
+        expected.push_str("|4       |5      |6                |\n");
+        expected.push_str("------------------------------------\n");
+        assert_eq!(expected,
+                   to_csv("\nhi there|I'm bob|what's your name?\n4|5|6|7\n",
+                          "\n", "|", Some(&&String::from("2"))));
     }
 }
